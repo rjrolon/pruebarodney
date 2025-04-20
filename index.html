@@ -1,0 +1,40 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cotización del Dólar</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      color: #333;
+    }
+    .cotizacion {
+      font-size: 2em;
+      color: #2196F3;
+    }
+  </style>
+</head>
+<body>
+  <h1>Cotización del Dólar Blue</h1>
+  <p class="cotizacion">Venta: <span id="dolar-blue">Cargando...</span></p>
+
+  <script>
+    fetch('https://dolarapi.com/v1/dolares/blue')
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('dolar-blue').innerText = `$${data.venta}`;
+      })
+      .catch(error => {
+        console.error('Error al obtener los datos:', error);
+        document.getElementById('dolar-blue').innerText = 'Error';
+      });
+  </script>
+</body>
+</html>
