@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tablaTarjetasBody = document.getElementById('tabla-tarjetas').querySelector('tbody');
     const formNuevoPago = document.getElementById('form-nuevo-pago');
     const selectTarjetaPago = document.getElementById('tarjeta-pago');
-    const fechaPagoInput = document.getElementById('fecha-pago'); // Obtenemos el input de fecha de pago
+    const fechaPagoInput = document.getElementById('fecha-pago');
     const tablaPagosBody = document.getElementById('tabla-pagos').querySelector('tbody');
     const tablaResumenBody = document.getElementById('tabla-resumen').querySelector('tbody');
     const totalDeudaElement = document.getElementById('total-deuda');
@@ -14,10 +14,10 @@ document.addEventListener('DOMContentLoaded', () => {
     actualizarTablaPagos();
     actualizarResumenMensual();
 
-    // Establecer la fecha actual por defecto en el campo de fecha de pago al cargar la página
+    // Establecer la fecha actual por defecto en el campo de fecha de pago
     const hoy = new Date();
     const anio = hoy.getFullYear();
-    const mes = String(hoy.getMonth() + 1).padStart(2, '0'); // Los meses van de 0 a 11
+    const mes = String(hoy.getMonth() + 1).padStart(2, '0');
     const dia = String(hoy.getDate()).padStart(2, '0');
     fechaPagoInput.value = `${anio}-${mes}-${dia}`;
 
@@ -37,7 +37,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function cargarTarjetas() {
         const tarjetasGuardadas = localStorage.getItem('tarjetas');
-        return tarjetasGuardadas ? JSON.parse(tarjetasGuardadas) : [];
+        if (tarjetasGuardadas) {
+            return JSON.parse(tarjetasGuardadas);
+        } else {
+            // Precarga de tus tarjetas
+            const tarjetasPrecargadas = [
+                { id: Date.now() + 1, nombre: '007MC MasterCard Galicia', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
+                { id: Date.now() + 2, nombre: '007VISA VISA Galicia', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
+                { id: Date.now() + 3, nombre: '014MC MasterCard BaPro', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
+                { id: Date.now() + 4, nombre: '014VISA VISA BaPro', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
+                { id: Date.now() + 5, nombre: '015MC MasterCard ICBC', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
+                { id: Date.now() + 6, nombre: '015VISA VISA ICBC', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
+                { id: Date.now() + 7, nombre: '017VISA VISA BBVA', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
+                { id: Date.now() + 8, nombre: '029MC MasterCard Ciudad', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
+                { id: Date.now() + 9, nombre: '029VISA VISA Ciudad', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
+                { id: Date.now() + 10, nombre: '034MC MasterCard Patagonia', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
+                { id: Date.now() + 11, nombre: '034VISA VISA Patagonia', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
+                { id: Date.now() + 12, nombre: '044VISA VISA Hipotecario', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
+                { id: Date.now() + 13, nombre: '072AMEX Amex Santander', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
+                { id: Date.now() + 14, nombre: '072VISA VISA Santander', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
+                { id: Date.now() + 15, nombre: '094VISA VISA Corrientes', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
+                { id: Date.now() + 16, nombre: '285AMEX Amex Macro', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
+                { id: Date.now() + 17, nombre: '285VISA VISA Macro', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
+                { id: Date.now() + 18, nombre: '330VISA VISA Santa Fe', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
+                { id: Date.now() + 19, nombre: '415AMEX Amex Reba', saldoInicial: 0, fechaVencimiento: '', pagos: [] }
+            ];
+            localStorage.setItem('tarjetas', JSON.stringify(tarjetasPrecargadas));
+            return tarjetasPrecargadas;
+        }
     }
 
     function guardarTarjetas() {
@@ -129,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function registrarNuevoPago() {
         const tarjetaId = parseInt(selectTarjetaPago.value);
-        const fechaPago = fechaPagoInput.value; // Ya estará con la fecha actual por defecto
+        const fechaPago = fechaPagoInput.value;
         const montoPago = parseFloat(document.getElementById('monto-pago').value);
 
         if (tarjetaId && fechaPago && !isNaN(montoPago) && montoPago > 0) {
