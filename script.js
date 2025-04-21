@@ -94,7 +94,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (tarjeta) {
                 const nuevoPago = {
                     fecha: fechaPago,
-                    monto: montoPago
+                    monto: montoPago,
+                    id: Date.now() // Agregamos un ID único para cada pago
                 };
                 tarjeta.pagos.push(nuevoPago);
                 guardarTarjetas();
@@ -118,13 +119,33 @@ document.addEventListener('DOMContentLoaded', () => {
                     const celdaTarjeta = fila.insertCell();
                     const celdaFechaPago = fila.insertCell();
                     const celdaMontoPago = fila.insertCell();
+                    const celdaAcciones = fila.insertCell();
 
                     celdaTarjeta.textContent = tarjeta.nombre;
                     celdaFechaPago.textContent = pago.fecha;
                     celdaMontoPago.textContent = `$${pago.monto.toFixed(2)}`;
+
+                    // Botón para deshacer el pago
+                    const botonDeshacer = document.createElement('button');
+                    botonDeshacer.textContent = 'Deshacer';
+                    botonDeshacer.classList.add('btn', 'btn-sm', 'btn-outline-danger');
+                    botonDeshacer.addEventListener('click', function() {
+                        deshacerPago(tarjeta.id, pago.id);
+                    });
+                    celdaAcciones.appendChild(botonDeshacer);
                 });
             }
         });
+    }
+
+    function deshacerPago(tarjetaId, pagoId) {
+        const tarjeta = tarjetas.find(t => t.id === tarjetaId);
+        if (tarjeta) {
+            tarjeta.pagos = tarjeta.pagos.filter(pago => pago.id !== pagoId);
+            guardarTarjetas();
+            actualizarTablaPagos();
+            actualizarResumenMensual();
+        }
     }
 
     function actualizarResumenMensual() {
