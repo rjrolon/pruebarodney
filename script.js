@@ -39,14 +39,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function agregarNuevaTarjeta() {
         const nombre = document.getElementById('nombre-tarjeta').value.trim();
         const saldoInicial = parseFloat(document.getElementById('saldo-inicial').value);
-        const fechaCorte = document.getElementById('fecha-corte').value;
+        const fechaVencimiento = document.getElementById('fecha-vencimiento').value;
 
         if (nombre && !isNaN(saldoInicial)) {
             const nuevaTarjeta = {
                 id: Date.now(),
                 nombre: nombre,
                 saldoInicial: saldoInicial,
-                fechaCorte: fechaCorte,
+                fechaVencimiento: fechaVencimiento,
                 pagos: []
             };
             tarjetas.push(nuevaTarjeta);
@@ -66,14 +66,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const fila = tablaTarjetasBody.insertRow();
             const celdaNombre = fila.insertCell();
             const celdaSaldoInicial = fila.insertCell();
-            const celdaFechaCorte = fila.insertCell();
+            const celdaFechaVencimiento = fila.insertCell();
+            const celdaDiasRestantes = fila.insertCell();
             const celdaAcciones = fila.insertCell();
 
             celdaNombre.textContent = tarjeta.nombre;
             celdaSaldoInicial.textContent = `$${tarjeta.saldoInicial.toFixed(2)}`;
-            celdaFechaCorte.textContent = tarjeta.fechaCorte || '-';
+            celdaFechaVencimiento.textContent = tarjeta.fechaVencimiento || '-';
 
-            // Botón para eliminar la tarjeta
+            const diasRestantes = calcularDiasRestantes(tarjeta.fechaVencimiento);
+            celdaDiasRestantes.textContent = diasRestantes === null ? '-' : diasRestantes;
+
             const botonEliminar = document.createElement('button');
             botonEliminar.textContent = 'Eliminar';
             botonEliminar.classList.add('btn', 'btn-sm', 'btn-outline-danger');
@@ -84,13 +87,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function calcularDiasRestantes(fechaVencimiento) {
+        if (!fechaVencimiento) {
+            return null;
+        }
+        const fechaVencimientoDate = new Date(fechaVencimiento);
+        const hoy = new Date();
+        const diferenciaTiempo = fechaVencimientoDate.getTime() - hoy.getTime();
+        const diferenciaDias = Math.ceil(diferenciaTiempo / (1000 * 3600 * 24));
+        return diferenciaDias >= 0 ? diferenciaDias : 'Vencida';
+    }
+
     function eliminarTarjeta(tarjetaId) {
         if (confirm('¿Estás seguro de que quieres eliminar esta tarjeta y todos sus pagos?')) {
             tarjetas = tarjetas.filter(tarjeta => tarjeta.id !== tarjetaId);
             guardarTarjetas();
             actualizarTablaTarjetas();
             actualizarOpcionesTarjetaPago();
-            actualizarTablaPagos(); // También actualizamos la tabla de pagos por si había pagos asociados
+            actualizarTablaPagos();
             actualizarResumenMensual();
         }
     }
@@ -140,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const celdaTarjeta = fila.insertCell();
                     const celdaFechaPago = fila.insertCell();
                     const celdaMontoPago = fila.insertCell();
-                    const celdaAcciones = fila.insertCell();
+                    const celdaAccionesPago = fila.insertCell();
 
                     celdaTarjeta.textContent = tarjeta.nombre;
                     celdaFechaPago.textContent = pago.fecha;
@@ -152,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     botonDeshacer.addEventListener('click', function() {
                         deshacerPago(tarjeta.id, pago.id);
                     });
-                    celdaAcciones.appendChild(botonDeshacer);
+                    celdaAccionesPago.appendChild(botonDeshacer);
                 });
             }
         });
