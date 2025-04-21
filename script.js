@@ -10,25 +10,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalDeudaElement = document.getElementById('total-deuda');
     const botonExportar = document.getElementById('boton-exportar');
     const tarjetasPrecargadas = [
-        { id: 'precargada-1', nombre: '007MC MasterCard Galicia', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
-        { id: 'precargada-2', nombre: '007VISA VISA Galicia', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
-        { id: 'precargada-3', nombre: '014MC MasterCard BaPro', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
-        { id: 'precargada-4', nombre: '014VISA VISA BaPro', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
-        { id: 'precargada-5', nombre: '015MC MasterCard ICBC', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
-        { id: 'precargada-6', nombre: '015VISA VISA ICBC', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
-        { id: 'precargada-7', nombre: '017VISA VISA BBVA', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
-        { id: 'precargada-8', nombre: '029MC MasterCard Ciudad', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
-        { id: 'precargada-9', nombre: '029VISA VISA Ciudad', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
-        { id: 'precargada-10', nombre: '034MC MasterCard Patagonia', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
-        { id: 'precargada-11', nombre: '034VISA VISA Patagonia', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
-        { id: 'precargada-12', nombre: '044VISA VISA Hipotecario', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
-        { id: 'precargada-13', nombre: '072AMEX Amex Santander', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
-        { id: 'precargada-14', nombre: '072VISA VISA Santander', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
-        { id: 'precargada-15', nombre: '094VISA VISA Corrientes', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
-        { id: 'precargada-16', nombre: '285AMEX Amex Macro', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
-        { id: 'precargada-17', nombre: '285VISA VISA Macro', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
-        { id: 'precargada-18', nombre: '330VISA VISA Santa Fe', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
-        { id: 'precargada-19', nombre: '415AMEX Amex Reba', saldoInicial: 0, fechaVencimiento: '', pagos: [] }
+        { id: 'precargada-1', nombre: '007MC MasterCard Galicia', saldoInicial: 0, fechaVencimiento: '', pagos: [], pagoMinimo: 0 },
+        { id: 'precargada-2', nombre: '007VISA VISA Galicia', saldoInicial: 0, fechaVencimiento: '', pagos: [], pagoMinimo: 0 },
+        { id: 'precargada-3', nombre: '014MC MasterCard BaPro', saldoInicial: 0, fechaVencimiento: '', pagos: [], pagoMinimo: 0 },
+        { id: 'precargada-4', nombre: '014VISA VISA BaPro', saldoInicial: 0, fechaVencimiento: '', pagos: [], pagoMinimo: 0 },
+        { id: 'precargada-5', nombre: '015MC MasterCard ICBC', saldoInicial: 0, fechaVencimiento: '', pagos: [], pagoMinimo: 0 },
+        { id: 'precargada-6', nombre: '015VISA VISA ICBC', saldoInicial: 0, fechaVencimiento: '', pagos: [], pagoMinimo: 0 },
+        { id: 'precargada-7', nombre: '017VISA VISA BBVA', saldoInicial: 0, fechaVencimiento: '', pagos: [], pagoMinimo: 0 },
+        { id: 'precargada-8', nombre: '029MC MasterCard Ciudad', saldoInicial: 0, fechaVencimiento: '', pagos: [], pagoMinimo: 0 },
+        { id: 'precargada-9', nombre: '029VISA VISA Ciudad', saldoInicial: 0, fechaVencimiento: '', pagos: [], pagoMinimo: 0 },
+        { id: 'precargada-10', nombre: '034MC MasterCard Patagonia', saldoInicial: 0, fechaVencimiento: '', pagos: [], pagoMinimo: 0 },
+        { id: 'precargada-11', nombre: '034VISA VISA Patagonia', saldoInicial: 0, fechaVencimiento: '', pagos: [], pagoMinimo: 0 },
+        { id: 'precargada-12', nombre: '044VISA VISA Hipotecario', saldoInicial: 0, fechaVencimiento: '', pagos: [], pagoMinimo: 0 },
+        { id: 'precargada-13', nombre: '072AMEX Amex Santander', saldoInicial: 0, fechaVencimiento: '', pagos: [], pagoMinimo: 0 },
+        { id: 'precargada-14', nombre: '072VISA VISA Santander', saldoInicial: 0, fechaVencimiento: '', pagos: [], pagoMinimo: 0 },
+        { id: 'precargada-15', nombre: '094VISA VISA Corrientes', saldoInicial: 0, fechaVencimiento: '', pagos: [], pagoMinimo: 0 },
+        { id: 'precargada-16', nombre: '285AMEX Amex Macro', saldoInicial: 0, fechaVencimiento: '', pagos: [], pagoMinimo: 0 },
+        { id: 'precargada-17', nombre: '285VISA VISA Macro', saldoInicial: 0, fechaVencimiento: '', pagos: [], pagoMinimo: 0 },
+        { id: 'precargada-18', nombre: '330VISA VISA Santa Fe', saldoInicial: 0, fechaVencimiento: '', pagos: [], pagoMinimo: 0 },
+        { id: 'precargada-19', nombre: '415AMEX Amex Reba', saldoInicial: 0, fechaVencimiento: '', pagos: [], pagoMinimo: 0 }
     ];
     let tarjetas = cargarTarjetas(tarjetasPrecargadas);
     actualizarTablaTarjetas();
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     tablaTarjetasBody.addEventListener('dblclick', function(event) {
         const target = event.target;
-        if (target.tagName === 'TD' && (target.cellIndex === 1 || target.cellIndex === 2)) {
+        if (target.tagName === 'TD' && (target.cellIndex === 1 || target.cellIndex === 2 || target.cellIndex === 3)) { // Ahora el índice 1 es Pago Mínimo, 2 es Total, 3 es Fecha
             const fila = target.parentNode;
             const tarjetaId = fila.dataset.tarjetaId;
             const tarjeta = tarjetas.find(t => t.id == tarjetaId);
@@ -67,7 +67,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (tarjeta) {
                 const columnaIndex = target.cellIndex;
                 const valorActual = target.textContent.startsWith('$') ? target.textContent.substring(1) : target.textContent;
-                const tipo = columnaIndex === 1 ? 'number' : 'date';
+                let tipo = 'text';
+                if (columnaIndex === 1 || columnaIndex === 2) { // Pago Mínimo o Total
+                    tipo = 'number';
+                } else if (columnaIndex === 3) { // Fecha de Vencimiento
+                    tipo = 'date';
+                }
 
                 const input = document.createElement('input');
                 input.type = tipo;
@@ -99,8 +104,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const tarjeta = tarjetas.find(t => t.id == tarjetaId);
         if (tarjeta) {
             if (columnaIndex === 1) {
-                tarjeta.saldoInicial = isNaN(parseFloat(nuevoValor)) ? tarjeta.saldoInicial : parseFloat(nuevoValor);
+                tarjeta.pagoMinimo = isNaN(parseFloat(nuevoValor)) ? tarjeta.pagoMinimo : parseFloat(nuevoValor);
             } else if (columnaIndex === 2) {
+                tarjeta.saldoInicial = isNaN(parseFloat(nuevoValor)) ? tarjeta.saldoInicial : parseFloat(nuevoValor);
+            } else if (columnaIndex === 3) {
                 tarjeta.fechaVencimiento = nuevoValor;
             }
             guardarTarjetas();
@@ -111,16 +118,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function cargarTarjetas(precargadas) {
         const tarjetasGuardadas = localStorage.getItem('tarjetas');
-        if (tarjetasGuardadas) {
-            const tarjetasLocalStorage = JSON.parse(tarjetasGuardadas);
-            const tarjetasUnicasPrecargadas = precargadas.filter(precargada =>
-                !tarjetasLocalStorage.some(local => local.nombre === precargada.nombre)
-            );
-            return [...tarjetasUnicasPrecargadas, ...tarjetasLocalStorage];
-        } else {
-            localStorage.setItem('tarjetas', JSON.stringify(precargadas));
-            return precargadas;
-        }
+        let tarjetasExistentes = tarjetasGuardadas ? JSON.parse(tarjetasGuardadas) : [];
+
+        // Aseguramos que las tarjetas existentes tengan la propiedad pagoMinimo
+        tarjetasExistentes = tarjetasExistentes.map(tarjeta => ({
+            ...tarjeta,
+            pagoMinimo: tarjeta.pagoMinimo === undefined ? tarjeta.saldoInicial * 0.05 : tarjeta.pagoMinimo
+        }));
+
+        const tarjetasPrecargadasConPagoMinimo = precargadas.map(tarjeta => ({
+            ...tarjeta,
+            pagoMinimo: tarjeta.pagoMinimo === undefined ? tarjeta.saldoInicial * 0.05 : tarjeta.pagoMinimo
+        }));
+
+        const tarjetasUnicasPrecargadas = tarjetasPrecargadasConPagoMinimo.filter(precargada =>
+            !tarjetasExistentes.some(local => local.nombre === precargada.nombre)
+        );
+
+        const tarjetasCombinadas = [...tarjetasUnicasPrecargadas, ...tarjetasExistentes];
+        localStorage.setItem('tarjetas', JSON.stringify(tarjetasCombinadas));
+        return tarjetasCombinadas;
     }
 
     function guardarTarjetas() {
@@ -138,7 +155,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 nombre: nombre,
                 saldoInicial: saldoInicial,
                 fechaVencimiento: fechaVencimiento,
-                pagos: []
+                pagos: [],
+                pagoMinimo: saldoInicial * 0.05 // Calcular pago mínimo al agregar
             };
             tarjetas.push(nuevaTarjeta);
             guardarTarjetas();
@@ -157,13 +175,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const fila = tablaTarjetasBody.insertRow();
             fila.dataset.tarjetaId = tarjeta.id;
             const celdaNombre = fila.insertCell();
-            const celdaTotal = fila.insertCell(); // Cambiado a celdaTotal
+            const celdaPagoMinimo = fila.insertCell(); // Nueva celda para Pago Mínimo
+            const celdaTotal = fila.insertCell();
             const celdaFechaVencimiento = fila.insertCell();
             const celdaDiasRestantes = fila.insertCell();
             const celdaAcciones = fila.insertCell();
 
             celdaNombre.textContent = tarjeta.nombre;
-            celdaTotal.textContent = `$${tarjeta.saldoInicial.toFixed(2)}`; // Usamos saldoInicial
+            celdaPagoMinimo.textContent = `$${tarjeta.pagoMinimo.toFixed(2)}`;
+            celdaTotal.textContent = `$${tarjeta.saldoInicial.toFixed(2)}`;
             celdaFechaVencimiento.textContent = tarjeta.fechaVencimiento || '-';
 
             const diasRestantes = calcularDiasRestantes(tarjeta.fechaVencimiento);
@@ -264,57 +284,3 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function deshacerPago(tarjetaId, pagoId) {
-        const tarjeta = tarjetas.find(t => t.id == tarjetaId);
-        if (tarjeta) {
-            tarjeta.pagos = tarjeta.pagos.filter(pago => pago.id !== pagoId);
-            guardarTarjetas();
-            actualizarTablaPagos();
-            actualizarResumenMensual();
-        }
-    }
-
-    function actualizarResumenMensual() {
-        tablaResumenBody.innerHTML = '';
-        let totalDeuda = 0;
-        const resumenData = [];
-
-        tarjetas.forEach(tarjeta => {
-            let totalPagado = tarjeta.pagos.reduce((sum, pago) => sum + pago.monto, 0);
-            const saldoActual = tarjeta.saldoInicial - totalPagado;
-            totalDeuda += saldoActual;
-
-            const fila = tablaResumenBody.insertRow();
-            const celdaNombre = fila.insertCell();
-            const celdaTotal = fila.insertCell(); // Cambiado a celdaTotal
-            const celdaTotalPagado = fila.insertCell();
-            const celdaSaldoActual = fila.insertCell();
-
-            celdaNombre.textContent = tarjeta.nombre;
-            celdaTotal.textContent = `$${tarjeta.saldoInicial.toFixed(2)}`; // Usamos saldoInicial
-            celdaTotalPagado.textContent = `$${totalPagado.toFixed(2)}`;
-            celdaSaldoActual.textContent = `$${saldoActual.toFixed(2)}`;
-
-            resumenData.push({
-                Nombre: tarjeta.nombre,
-                'Total': tarjeta.saldoInicial, // Usamos Saldo Inicial
-                'Total Pagado': totalPagado,
-                'Saldo Actual': saldoActual
-            });
-        });
-
-        totalDeudaElement.textContent = `$${totalDeuda.toFixed(2)}`;
-        window.resumenDataParaExportar = resumenData;
-    }
-
-    function exportarResumenCSV() {
-        if (!window.resumenDataParaExportar || window.resumenDataParaExportar.length === 0) {
-            alert('No hay datos en el resumen para exportar.');
-            return;
-        }
-
-        const data = window.resumenDataParaExportar;
-        const csvRows = [];
-        const headers = Object.keys(data[0]).join(',');
-        csvRows.push(headers);
-
-        data.forEach(row => {
