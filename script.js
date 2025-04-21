@@ -212,30 +212,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function registrarNuevoPago() {
-        const tarjetaId = parseInt(selectTarjetaPago.value);
-        const fechaPago = fechaPagoInput.value;
-        const montoPago = parseFloat(document.getElementById('monto-pago').value);
+    const tarjetaIdSeleccionada = selectTarjetaPago.value; // No parseamos inmediatamente a Int
+    const fechaPago = fechaPagoInput.value;
+    const montoPago = parseFloat(document.getElementById('monto-pago').value);
 
-        if (tarjetaId && fechaPago && !isNaN(montoPago) && montoPago > 0) {
-            const tarjeta = tarjetas.find(t => t.id === tarjetaId);
-            if (tarjeta) {
-                const nuevoPago = {
-                    fecha: fechaPago,
-                    monto: montoPago,
-                    id: Date.now()
-                };
-                tarjeta.pagos.push(nuevoPago);
-                guardarTarjetas();
-                actualizarTablaPagos();
-                actualizarResumenMensual();
-                formNuevoPago.reset();
-            } else {
-                alert('La tarjeta seleccionada no es válida.');
-            }
-        } else {
-            alert('Por favor, selecciona una tarjeta, ingresa una fecha de pago válida y un monto de pago válido.');
-        }
+    const tarjeta = tarjetas.find(t => t.id == tarjetaIdSeleccionada); // Usamos '==' para comparar string y número
+
+    if (tarjeta) {
+        const nuevoPago = {
+            fecha: fechaPago,
+            monto: isNaN(montoPago) ? 0 : montoPago,
+            id: Date.now()
+        };
+        tarjeta.pagos.push(nuevoPago);
+        guardarTarjetas();
+        actualizarTablaPagos();
+        actualizarResumenMensual();
+        formNuevoPago.reset();
+    } else if (tarjetaIdSeleccionada) {
+        alert('La tarjeta seleccionada no es válida.');
+    } else {
+        console.log("No se seleccionó ninguna tarjeta para el pago.");
     }
+}
 
     function actualizarTablaPagos() {
         tablaPagosBody.innerHTML = '';
