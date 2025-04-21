@@ -4,10 +4,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const formNuevoPago = document.getElementById('form-nuevo-pago');
     const selectTarjetaPago = document.getElementById('tarjeta-pago');
     const tablaPagosBody = document.getElementById('tabla-pagos').querySelector('tbody');
+    const tablaResumenBody = document.getElementById('tabla-resumen').querySelector('tbody');
+    const totalDeudaElement = document.getElementById('total-deuda');
     let tarjetas = cargarTarjetas();
     actualizarTablaTarjetas();
     actualizarOpcionesTarjetaPago();
     actualizarTablaPagos();
+    actualizarResumenMensual();
 
     formNuevaTarjeta.addEventListener('submit', function(event) {
         event.preventDefault();
@@ -45,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
             guardarTarjetas();
             actualizarTablaTarjetas();
             actualizarOpcionesTarjetaPago();
+            actualizarResumenMensual(); // Actualizamos el resumen al agregar una tarjeta
             formNuevaTarjeta.reset();
         } else {
             alert('Por favor, ingresa un nombre y un saldo inicial válido para la tarjeta.');
@@ -66,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function actualizarOpcionesTarjetaPago() {
-        selectTarjetaPago.innerHTML = '<option value="">Seleccionar Tarjeta</option>'; // Limpiamos las opciones y agregamos una por defecto
+        selectTarjetaPago.innerHTML = '<option value="">Seleccionar Tarjeta</option>';
         tarjetas.forEach(tarjeta => {
             const opcion = document.createElement('option');
             opcion.value = tarjeta.id;
@@ -90,6 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 tarjeta.pagos.push(nuevoPago);
                 guardarTarjetas();
                 actualizarTablaPagos();
+                actualizarResumenMensual(); // Actualizamos el resumen al registrar un pago
                 formNuevoPago.reset();
             } else {
                 alert('La tarjeta seleccionada no es válida.');
@@ -100,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function actualizarTablaPagos() {
-        tablaPagosBody.innerHTML = ''; // Limpiamos la tabla de pagos
+        tablaPagosBody.innerHTML = '';
         tarjetas.forEach(tarjeta => {
             if (tarjeta.pagos && tarjeta.pagos.length > 0) {
                 tarjeta.pagos.forEach(pago => {
@@ -115,5 +120,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         });
+    }
+
+    function actualizarResumenMensual() {
+        tablaResumenBody.innerHTML = ''; // Limpiamos la tabla de resumen
+        let totalDeuda = 0;
+
+        tarjetas.forEach(tarjeta => {
+            let totalPagado = tarjeta.pagos.reduce((sum, pago) => sum + pago.monto, 0);
+            const saldoActual = tarjeta.saldoInicial - totalPagado;
+            totalDeuda += saldoActual;
+
+            const fila = tablaResumenBody.insertRow();
+            const celdaNombre = fila.insertCell();
+            const celdaSaldoInicial = fila.insertCell();
+            const celdaTotalPagado = fila.insertCell();
+            const celdaSaldoActual = fila.insertCell();
+
+            celdaNombre.textContent = tarjeta.nombre;
+            celdaSaldoInicial.textContent = `$${tarjeta.saldoInicial.toFixed(2)}`;
+            celdaTotalPagado.textContent = `$${totalPagado.toFixed(2)}`;
+            celdaSaldoActual.textContent = `$${saldoActual.toFixed(2)}`;
+        });
+
+        totalDeudaElement.textContent = `$${totalDeuda.toFixed(2)}`;
     }
 });
