@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const formNuevaTarjeta = document.getElementById('form-nueva-tarjeta');
-    const tablaTarjetasBody = document.getElementById('tabla-tarjetas').querySelector('tbody');
+    const tablaTarjetas = document.getElementById('tabla-tarjetas');
+    const tablaTarjetasBody = tablaTarjetas.querySelector('tbody');
     const formNuevoPago = document.getElementById('form-nuevo-pago');
     const selectTarjetaPago = document.getElementById('tarjeta-pago');
     const fechaPagoInput = document.getElementById('fecha-pago');
@@ -29,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'precargada-18', nombre: '330VISA VISA Santa Fe', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
         { id: 'precargada-19', nombre: '415AMEX Amex Reba', saldoInicial: 0, fechaVencimiento: '', pagos: [] }
     ];
-    let tarjetas = cargarTarjetas(tarjetasPrecargadas); // Pasamos las tarjetas precargadas a la función
+    let tarjetas = cargarTarjetas(tarjetasPrecargadas);
     actualizarTablaTarjetas();
     actualizarOpcionesTarjetaPago();
     actualizarTablaPagos();
@@ -56,11 +57,62 @@ document.addEventListener('DOMContentLoaded', () => {
         exportarResumenCSV();
     });
 
+    tablaTarjetasBody.addEventListener('dblclick', function(event) { // Usamos doble clic para iniciar la edición
+        const target = event.target;
+        if (target.tagName === 'TD' && (target.cellIndex === 1 || target.cellIndex === 2)) {
+            const fila = target.parentNode;
+            const tarjetaId = fila.dataset.tarjetaId;
+            const tarjeta = tarjetas.find(t => t.id === tarjetaId);
+
+            if (tarjeta) {
+                const columnaIndex = target.cellIndex;
+                const valorActual = target.textContent.startsWith('$') ? target.textContent.substring(1) : target.textContent;
+                const tipo = columnaIndex === 1 ? 'number' : 'date';
+
+                const input = document.createElement('input');
+                input.type = tipo;
+                input.value = valorActual === '-' ? '' : valorActual;
+                input.classList.add('form-control', 'form-control-sm');
+
+                target.innerHTML = '';
+                target.appendChild(input);
+                input.focus();
+
+                input.addEventListener('blur', function() { // Guardar al perder el foco
+                    const nuevoValor = input.value.trim();
+                    actualizarValorTarjeta(tarjetaId, columnaIndex, nuevoValor);
+                });
+
+                input.addEventListener('keypress', function(event) { // Guardar con Enter
+                    if (event.key === 'Enter') {
+                        const nuevoValor = input.value.trim();
+                        actualizarValorTarjeta(tarjetaId, columnaIndex, nuevoValor);
+                    } else if (event.key === 'Escape') { // Deshacer con Escape
+                        actualizarTablaTarjetas();
+                    }
+                });
+            }
+        }
+    });
+
+    function actualizarValorTarjeta(tarjetaId, columnaIndex, nuevoValor) {
+        const tarjeta = tarjetas.find(t => t.id === tarjetaId);
+        if (tarjeta) {
+            if (columnaIndex === 1) {
+                tarjeta.saldoInicial = isNaN(parseFloat(nuevoValor)) ? tarjeta.saldoInicial : parseFloat(nuevoValor);
+            } else if (columnaIndex === 2) {
+                tarjeta.fechaVencimiento = nuevoValor;
+            }
+            guardarTarjetas();
+            actualizarTablaTarjetas();
+            actualizarResumenMensual();
+        }
+    }
+
     function cargarTarjetas(precargadas) {
         const tarjetasGuardadas = localStorage.getItem('tarjetas');
         if (tarjetasGuardadas) {
             const tarjetasLocalStorage = JSON.parse(tarjetasGuardadas);
-            // Filtramos las precargadas para evitar duplicados por nombre con las locales
             const tarjetasUnicasPrecargadas = precargadas.filter(precargada =>
                 !tarjetasLocalStorage.some(local => local.nombre === precargada.nombre)
             );
@@ -103,6 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tablaTarjetasBody.innerHTML = '';
         tarjetas.forEach(tarjeta => {
             const fila = tablaTarjetasBody.insertRow();
+            fila.dataset.tarjetaId = tarjeta.id;
             const celdaNombre = fila.insertCell();
             const celdaSaldoInicial = fila.insertCell();
             const celdaFechaVencimiento = fila.insertCell();
