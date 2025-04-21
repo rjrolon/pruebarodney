@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function actualizarResumenMensual() {
         tablaResumenBody.innerHTML = '';
         let totalDeuda = 0;
-        const resumenData = []; // Array para almacenar los datos del resumen para exportar
+        const resumenData = [];
 
         tarjetas.forEach(tarjeta => {
             let totalPagado = tarjeta.pagos.reduce((sum, pago) => sum + pago.monto, 0);
@@ -148,7 +148,6 @@ document.addEventListener('DOMContentLoaded', () => {
             celdaTotalPagado.textContent = `$${totalPagado.toFixed(2)}`;
             celdaSaldoActual.textContent = `$${saldoActual.toFixed(2)}`;
 
-            // Almacenamos los datos para la exportación
             resumenData.push({
                 Nombre: tarjeta.nombre,
                 'Saldo Inicial': tarjeta.saldoInicial,
@@ -158,7 +157,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         totalDeudaElement.textContent = `$${totalDeuda.toFixed(2)}`;
-        // Almacenamos los datos del resumen para que la función de exportación pueda acceder a ellos
         window.resumenDataParaExportar = resumenData;
     }
 
