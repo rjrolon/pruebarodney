@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             celdaNombre.textContent = tarjeta.nombre;
             celdaPagoMinimo.textContent = `$${tarjeta.pagoMinimo.toFixed(2)}`;
-            celdaTotal.textContent = `$${tarjeta.saldoInicial.toFixed(2)}`;
+            celdaTotal.textContent = `$${tarjeta.saldoInicial.toFixed(2)}`; // Muestra el saldo inicial como Total
             celdaFechaVencimiento.textContent = tarjeta.fechaVencimiento || '-';
 
             const diasRestantes = calcularDiasRestantes(tarjeta.fechaVencimiento);
@@ -284,3 +284,40 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function deshacerPago(tarjetaId, pagoId) {
+        const tarjeta = tarjetas.find(t => t.id == tarjetaId);
+        if (tarjeta) {
+            tarjeta.pagos = tarjeta.pagos.filter(pago => pago.id !== pagoId);
+            guardarTarjetas();
+            actualizarTablaPagos();
+            actualizarResumenMensual();
+        }
+    }
+
+    function actualizarResumenMensual() {
+        tablaResumenBody.innerHTML = '';
+        let totalDeuda = 0;
+        const resumenData = [];
+
+        tarjetas.forEach(tarjeta => {
+            let totalPagado = tarjeta.pagos.reduce((sum, pago) => sum + pago.monto, 0);
+            const saldoActual = tarjeta.saldoInicial - totalPagado;
+            totalDeuda += saldoActual;
+
+            const fila = tablaResumenBody.insertRow();
+            const celdaNombre = fila.insertCell();
+            const celdaPagoMinimo = fila.insertCell(); // Nueva celda para Pago Mínimo
+            const celdaTotal = fila.insertCell();
+            const celdaTotalPagado = fila.insertCell();
+            const celdaSaldoActual = fila.insertCell();
+
+            celdaNombre.textContent = tarjeta.nombre;
+            celdaPagoMinimo.textContent = `$${tarjeta.pagoMinimo.toFixed(2)}`;
+            celdaTotal.textContent = `$${tarjeta.saldoInicial.toFixed(2)}`; // Muestra el saldo inicial como Total
+            celdaTotalPagado.textContent = `$${totalPagado.toFixed(2)}`;
+            celdaSaldoActual.textContent = `$${saldoActual.toFixed(2)}`;
+
+            resumenData.push({
+                Nombre: tarjeta.nombre,
+                'Pago Mínimo': tarjeta.pagoMinimo,
+                'Total': tarjeta.saldoInicial, // Usamos Saldo Inicial
+                'Total Pagado': total
