@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tablaTarjetasBody = document.getElementById('tabla-tarjetas').querySelector('tbody');
     const formNuevoPago = document.getElementById('form-nuevo-pago');
     const selectTarjetaPago = document.getElementById('tarjeta-pago');
+    const fechaPagoInput = document.getElementById('fecha-pago'); // Obtenemos el input de fecha de pago
     const tablaPagosBody = document.getElementById('tabla-pagos').querySelector('tbody');
     const tablaResumenBody = document.getElementById('tabla-resumen').querySelector('tbody');
     const totalDeudaElement = document.getElementById('total-deuda');
@@ -12,6 +13,13 @@ document.addEventListener('DOMContentLoaded', () => {
     actualizarOpcionesTarjetaPago();
     actualizarTablaPagos();
     actualizarResumenMensual();
+
+    // Establecer la fecha actual por defecto en el campo de fecha de pago al cargar la página
+    const hoy = new Date();
+    const anio = hoy.getFullYear();
+    const mes = String(hoy.getMonth() + 1).padStart(2, '0'); // Los meses van de 0 a 11
+    const dia = String(hoy.getDate()).padStart(2, '0');
+    fechaPagoInput.value = `${anio}-${mes}-${dia}`;
 
     formNuevaTarjeta.addEventListener('submit', function(event) {
         event.preventDefault();
@@ -121,10 +129,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function registrarNuevoPago() {
         const tarjetaId = parseInt(selectTarjetaPago.value);
-        const fechaPago = document.getElementById('fecha-pago').value;
+        const fechaPago = fechaPagoInput.value; // Ya estará con la fecha actual por defecto
         const montoPago = parseFloat(document.getElementById('monto-pago').value);
 
-        if (tarjetaId && !isNaN(montoPago) && montoPago > 0) {
+        if (tarjetaId && fechaPago && !isNaN(montoPago) && montoPago > 0) {
             const tarjeta = tarjetas.find(t => t.id === tarjetaId);
             if (tarjeta) {
                 const nuevoPago = {
@@ -141,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('La tarjeta seleccionada no es válida.');
             }
         } else {
-            alert('Por favor, selecciona una tarjeta e ingresa un monto de pago válido.');
+            alert('Por favor, selecciona una tarjeta, ingresa una fecha de pago válida y un monto de pago válido.');
         }
     }
 
