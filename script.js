@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tablaPagosBody = document.getElementById('tabla-pagos').querySelector('tbody');
     const tablaResumenBody = document.getElementById('tabla-resumen').querySelector('tbody');
     const totalDeudaElement = document.getElementById('total-deuda');
+    const botonExportar = document.getElementById('boton-exportar');
     let tarjetas = cargarTarjetas();
     actualizarTablaTarjetas();
     actualizarOpcionesTarjetaPago();
@@ -20,6 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
     formNuevoPago.addEventListener('submit', function(event) {
         event.preventDefault();
         registrarNuevoPago();
+    });
+
+    botonExportar.addEventListener('click', function() {
+        exportarResumenCSV();
     });
 
     function cargarTarjetas() {
@@ -48,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
             guardarTarjetas();
             actualizarTablaTarjetas();
             actualizarOpcionesTarjetaPago();
-            actualizarResumenMensual(); // Actualizamos el resumen al agregar una tarjeta
+            actualizarResumenMensual();
             formNuevaTarjeta.reset();
         } else {
             alert('Por favor, ingresa un nombre y un saldo inicial válido para la tarjeta.');
@@ -94,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 tarjeta.pagos.push(nuevoPago);
                 guardarTarjetas();
                 actualizarTablaPagos();
-                actualizarResumenMensual(); // Actualizamos el resumen al registrar un pago
+                actualizarResumenMensual();
                 formNuevoPago.reset();
             } else {
                 alert('La tarjeta seleccionada no es válida.');
@@ -123,8 +128,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function actualizarResumenMensual() {
-        tablaResumenBody.innerHTML = ''; // Limpiamos la tabla de resumen
+        tablaResumenBody.innerHTML = '';
         let totalDeuda = 0;
+        const resumenData = []; // Array para almacenar los datos del resumen para exportar
 
         tarjetas.forEach(tarjeta => {
             let totalPagado = tarjeta.pagos.reduce((sum, pago) => sum + pago.monto, 0);
@@ -141,8 +147,46 @@ document.addEventListener('DOMContentLoaded', () => {
             celdaSaldoInicial.textContent = `$${tarjeta.saldoInicial.toFixed(2)}`;
             celdaTotalPagado.textContent = `$${totalPagado.toFixed(2)}`;
             celdaSaldoActual.textContent = `$${saldoActual.toFixed(2)}`;
+
+            // Almacenamos los datos para la exportación
+            resumenData.push({
+                Nombre: tarjeta.nombre,
+                'Saldo Inicial': tarjeta.saldoInicial,
+                'Total Pagado': totalPagado,
+                'Saldo Actual': saldoActual
+            });
         });
 
         totalDeudaElement.textContent = `$${totalDeuda.toFixed(2)}`;
+        // Almacenamos los datos del resumen para que la función de exportación pueda acceder a ellos
+        window.resumenDataParaExportar = resumenData;
+    }
+
+    function exportarResumenCSV() {
+        if (!window.resumenDataParaExportar || window.resumenDataParaExportar.length === 0) {
+            alert('No hay datos en el resumen para exportar.');
+            return;
+        }
+
+        const data = window.resumenDataParaExportar;
+        const csvRows = [];
+        const headers = Object.keys(data[0]).join(',');
+        csvRows.push(headers);
+
+        data.forEach(row => {
+            const values = Object.values(row).map(value => `"${value}"`).join(',');
+            csvRows.push(values);
+        });
+
+        const csvString = csvRows.join('\n');
+        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'resumen_financiero.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
     }
 });
