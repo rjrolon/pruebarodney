@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const anio = hoy.getFullYear();
     const mes = String(hoy.getMonth() + 1).padStart(2, '0');
     const dia = String(hoy.getDate()).padStart(2, '0');
-    fechaPagoInput.value = `${anio}-${mes}-${dia}`;
+    fechaPagoInput.value = `<span class="math-inline">\{anio\}\-</span>{mes}-${dia}`;
 
     formNuevaTarjeta.addEventListener('submit', function(event) {
         event.preventDefault();
@@ -57,12 +57,12 @@ document.addEventListener('DOMContentLoaded', () => {
         exportarResumenCSV();
     });
 
-    tablaTarjetasBody.addEventListener('dblclick', function(event) { // Usamos doble clic para iniciar la edición
+    tablaTarjetasBody.addEventListener('dblclick', function(event) {
         const target = event.target;
         if (target.tagName === 'TD' && (target.cellIndex === 1 || target.cellIndex === 2)) {
             const fila = target.parentNode;
             const tarjetaId = fila.dataset.tarjetaId;
-            const tarjeta = tarjetas.find(t => t.id === tarjetaId);
+            const tarjeta = tarjetas.find(t => t.id == tarjetaId);
 
             if (tarjeta) {
                 const columnaIndex = target.cellIndex;
@@ -78,16 +78,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 target.appendChild(input);
                 input.focus();
 
-                input.addEventListener('blur', function() { // Guardar al perder el foco
+                input.addEventListener('blur', function() {
                     const nuevoValor = input.value.trim();
                     actualizarValorTarjeta(tarjetaId, columnaIndex, nuevoValor);
                 });
 
-                input.addEventListener('keypress', function(event) { // Guardar con Enter
+                input.addEventListener('keypress', function(event) {
                     if (event.key === 'Enter') {
                         const nuevoValor = input.value.trim();
                         actualizarValorTarjeta(tarjetaId, columnaIndex, nuevoValor);
-                    } else if (event.key === 'Escape') { // Deshacer con Escape
+                    } else if (event.key === 'Escape') {
                         actualizarTablaTarjetas();
                     }
                 });
@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function actualizarValorTarjeta(tarjetaId, columnaIndex, nuevoValor) {
-        const tarjeta = tarjetas.find(t => t.id === tarjetaId);
+        const tarjeta = tarjetas.find(t => t.id == tarjetaId);
         if (tarjeta) {
             if (columnaIndex === 1) {
                 tarjeta.saldoInicial = isNaN(parseFloat(nuevoValor)) ? tarjeta.saldoInicial : parseFloat(nuevoValor);
@@ -157,13 +157,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const fila = tablaTarjetasBody.insertRow();
             fila.dataset.tarjetaId = tarjeta.id;
             const celdaNombre = fila.insertCell();
-            const celdaSaldoInicial = fila.insertCell();
+            const celdaTotal = fila.insertCell(); // Cambiado a celdaTotal
             const celdaFechaVencimiento = fila.insertCell();
             const celdaDiasRestantes = fila.insertCell();
             const celdaAcciones = fila.insertCell();
 
             celdaNombre.textContent = tarjeta.nombre;
-            celdaSaldoInicial.textContent = `$${tarjeta.saldoInicial.toFixed(2)}`;
+            celdaTotal.textContent = `$${tarjeta.saldoInicial.toFixed(2)}`; // Usamos saldoInicial
             celdaFechaVencimiento.textContent = tarjeta.fechaVencimiento || '-';
 
             const diasRestantes = calcularDiasRestantes(tarjeta.fechaVencimiento);
@@ -212,29 +212,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function registrarNuevoPago() {
-    const tarjetaIdSeleccionada = selectTarjetaPago.value; // No parseamos inmediatamente a Int
-    const fechaPago = fechaPagoInput.value;
-    const montoPago = parseFloat(document.getElementById('monto-pago').value);
+        const tarjetaIdSeleccionada = selectTarjetaPago.value;
+        const fechaPago = fechaPagoInput.value;
+        const montoPago = parseFloat(document.getElementById('monto-pago').value);
 
-    const tarjeta = tarjetas.find(t => t.id == tarjetaIdSeleccionada); // Usamos '==' para comparar string y número
+        const tarjeta = tarjetas.find(t => t.id == tarjetaIdSeleccionada);
 
-    if (tarjeta) {
-        const nuevoPago = {
-            fecha: fechaPago,
-            monto: isNaN(montoPago) ? 0 : montoPago,
-            id: Date.now()
-        };
-        tarjeta.pagos.push(nuevoPago);
-        guardarTarjetas();
-        actualizarTablaPagos();
-        actualizarResumenMensual();
-        formNuevoPago.reset();
-    } else if (tarjetaIdSeleccionada) {
-        alert('La tarjeta seleccionada no es válida.');
-    } else {
-        console.log("No se seleccionó ninguna tarjeta para el pago.");
+        if (tarjeta) {
+            const nuevoPago = {
+                fecha: fechaPago,
+                monto: isNaN(montoPago) ? 0 : montoPago,
+                id: Date.now()
+            };
+            tarjeta.pagos.push(nuevoPago);
+            guardarTarjetas();
+            actualizarTablaPagos();
+            actualizarResumenMensual();
+            formNuevoPago.reset();
+        } else if (tarjetaIdSeleccionada) {
+            alert('La tarjeta seleccionada no es válida.');
+        } else {
+            console.log("No se seleccionó ninguna tarjeta para el pago.");
+        }
     }
-}
 
     function actualizarTablaPagos() {
         tablaPagosBody.innerHTML = '';
@@ -264,7 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function deshacerPago(tarjetaId, pagoId) {
-        const tarjeta = tarjetas.find(t => t.id === tarjetaId);
+        const tarjeta = tarjetas.find(t => t.id == tarjetaId);
         if (tarjeta) {
             tarjeta.pagos = tarjeta.pagos.filter(pago => pago.id !== pagoId);
             guardarTarjetas();
@@ -285,18 +285,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const fila = tablaResumenBody.insertRow();
             const celdaNombre = fila.insertCell();
-            const celdaSaldoInicial = fila.insertCell();
+            const celdaTotal = fila.insertCell(); // Cambiado a celdaTotal
             const celdaTotalPagado = fila.insertCell();
             const celdaSaldoActual = fila.insertCell();
 
             celdaNombre.textContent = tarjeta.nombre;
-            celdaSaldoInicial.textContent = `$${tarjeta.saldoInicial.toFixed(2)}`;
+            celdaTotal.textContent = `$${tarjeta.saldoInicial.toFixed(2)}`; // Usamos saldoInicial
             celdaTotalPagado.textContent = `$${totalPagado.toFixed(2)}`;
             celdaSaldoActual.textContent = `$${saldoActual.toFixed(2)}`;
 
             resumenData.push({
                 Nombre: tarjeta.nombre,
-                'Saldo Inicial': tarjeta.saldoInicial,
+                'Total': tarjeta.saldoInicial, // Usamos Saldo Inicial
                 'Total Pagado': totalPagado,
                 'Saldo Actual': saldoActual
             });
@@ -318,19 +318,3 @@ document.addEventListener('DOMContentLoaded', () => {
         csvRows.push(headers);
 
         data.forEach(row => {
-            const values = Object.values(row).map(value => `"${value}"`).join(',');
-            csvRows.push(values);
-        });
-
-        const csvString = csvRows.join('\n');
-        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'resumen_financiero.csv';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
-});
