@@ -67,11 +67,32 @@ document.addEventListener('DOMContentLoaded', () => {
             const celdaNombre = fila.insertCell();
             const celdaSaldoInicial = fila.insertCell();
             const celdaFechaCorte = fila.insertCell();
+            const celdaAcciones = fila.insertCell();
 
             celdaNombre.textContent = tarjeta.nombre;
             celdaSaldoInicial.textContent = `$${tarjeta.saldoInicial.toFixed(2)}`;
             celdaFechaCorte.textContent = tarjeta.fechaCorte || '-';
+
+            // Botón para eliminar la tarjeta
+            const botonEliminar = document.createElement('button');
+            botonEliminar.textContent = 'Eliminar';
+            botonEliminar.classList.add('btn', 'btn-sm', 'btn-outline-danger');
+            botonEliminar.addEventListener('click', function() {
+                eliminarTarjeta(tarjeta.id);
+            });
+            celdaAcciones.appendChild(botonEliminar);
         });
+    }
+
+    function eliminarTarjeta(tarjetaId) {
+        if (confirm('¿Estás seguro de que quieres eliminar esta tarjeta y todos sus pagos?')) {
+            tarjetas = tarjetas.filter(tarjeta => tarjeta.id !== tarjetaId);
+            guardarTarjetas();
+            actualizarTablaTarjetas();
+            actualizarOpcionesTarjetaPago();
+            actualizarTablaPagos(); // También actualizamos la tabla de pagos por si había pagos asociados
+            actualizarResumenMensual();
+        }
     }
 
     function actualizarOpcionesTarjetaPago() {
@@ -95,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const nuevoPago = {
                     fecha: fechaPago,
                     monto: montoPago,
-                    id: Date.now() // Agregamos un ID único para cada pago
+                    id: Date.now()
                 };
                 tarjeta.pagos.push(nuevoPago);
                 guardarTarjetas();
@@ -125,7 +146,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     celdaFechaPago.textContent = pago.fecha;
                     celdaMontoPago.textContent = `$${pago.monto.toFixed(2)}`;
 
-                    // Botón para deshacer el pago
                     const botonDeshacer = document.createElement('button');
                     botonDeshacer.textContent = 'Deshacer';
                     botonDeshacer.classList.add('btn', 'btn-sm', 'btn-outline-danger');
