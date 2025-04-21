@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const anio = hoy.getFullYear();
     const mes = String(hoy.getMonth() + 1).padStart(2, '0');
     const dia = String(hoy.getDate()).padStart(2, '0');
-    fechaPagoInput.value = `<span class="math-inline">\{anio\}\-</span>{mes}-${dia}`;
+    fechaPagoInput.value = `${anio}-${mes}-${dia}`;
 
     formNuevaTarjeta.addEventListener('submit', function(event) {
         event.preventDefault();
@@ -112,11 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function cargarTarjetas(precargadas) {
         const tarjetasGuardadas = localStorage.getItem('tarjetas');
         if (tarjetasGuardadas) {
-            const tarjetasLocalStorage = JSON.parse(tarjetasGuardadas);
-            const tarjetasUnicasPrecargadas = precargadas.filter(precargada =>
-                !tarjetasLocalStorage.some(local => local.nombre === precargada.nombre)
-            );
-            return [...tarjetasUnicasPrecargadas, ...tarjetasLocalStorage];
+            return JSON.parse(tarjetasGuardadas);
         } else {
             localStorage.setItem('tarjetas', JSON.stringify(precargadas));
             return precargadas;
@@ -318,3 +314,19 @@ document.addEventListener('DOMContentLoaded', () => {
         csvRows.push(headers);
 
         data.forEach(row => {
+            const values = Object.values(row).map(value => `"${value}"`).join(',');
+            csvRows.push(values);
+        });
+
+        const csvString = csvRows.join('\n');
+        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'resumen_financiero.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+});
