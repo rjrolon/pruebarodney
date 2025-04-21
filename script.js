@@ -212,30 +212,30 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function registrarNuevoPago() {
-        const tarjetaId = parseInt(selectTarjetaPago.value);
-        const fechaPago = fechaPagoInput.value;
-        const montoPago = parseFloat(document.getElementById('monto-pago').value);
+    const tarjetaId = parseInt(selectTarjetaPago.value);
+    const fechaPago = fechaPagoInput.value;
+    const montoPago = parseFloat(document.getElementById('monto-pago').value);
 
-        if (tarjetaId && fechaPago && !isNaN(montoPago) && montoPago > 0) {
-            const tarjeta = tarjetas.find(t => t.id === tarjetaId);
-            if (tarjeta) {
-                const nuevoPago = {
-                    fecha: fechaPago,
-                    monto: montoPago,
-                    id: Date.now()
-                };
-                tarjeta.pagos.push(nuevoPago);
-                guardarTarjetas();
-                actualizarTablaPagos();
-                actualizarResumenMensual();
-                formNuevoPago.reset();
-            } else {
-                alert('La tarjeta seleccionada no es válida.');
-            }
-        } else {
-            alert('Por favor, selecciona una tarjeta, ingresa una fecha de pago válida y un monto de pago válido.');
-        }
+    const tarjeta = tarjetas.find(t => t.id === tarjetaId);
+    if (tarjeta) {
+        const nuevoPago = {
+            fecha: fechaPago,
+            monto: isNaN(montoPago) ? 0 : montoPago, // Si no es un número, se guarda como 0
+            id: Date.now()
+        };
+        tarjeta.pagos.push(nuevoPago);
+        guardarTarjetas();
+        actualizarTablaPagos();
+        actualizarResumenMensual();
+        formNuevoPago.reset();
+    } else if (tarjetaId) {
+        alert('La tarjeta seleccionada no es válida.');
+    } else {
+        // Si no se selecciona tarjeta, simplemente no se hace nada por ahora.
+        // Podrías agregar un mensaje o lógica diferente si es necesario.
+        console.log("No se seleccionó ninguna tarjeta para el pago.");
     }
+}
 
     function actualizarTablaPagos() {
         tablaPagosBody.innerHTML = '';
