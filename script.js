@@ -157,13 +157,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const fila = tablaTarjetasBody.insertRow();
             fila.dataset.tarjetaId = tarjeta.id;
             const celdaNombre = fila.insertCell();
-            const celdaTotal = fila.insertCell(); // Cambiado a celdaTotal
+            const celdaTotal = fila.insertCell();
             const celdaFechaVencimiento = fila.insertCell();
             const celdaDiasRestantes = fila.insertCell();
             const celdaAcciones = fila.insertCell();
 
             celdaNombre.textContent = tarjeta.nombre;
-            celdaTotal.textContent = `$${tarjeta.saldoInicial.toFixed(2)}`; // Usamos saldoInicial
+            celdaTotal.textContent = `$${tarjeta.saldoInicial.toFixed(2)}`;
             celdaFechaVencimiento.textContent = tarjeta.fechaVencimiento || '-';
 
             const diasRestantes = calcularDiasRestantes(tarjeta.fechaVencimiento);
@@ -285,18 +285,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const fila = tablaResumenBody.insertRow();
             const celdaNombre = fila.insertCell();
-            const celdaTotal = fila.insertCell(); // Cambiado a celdaTotal
+            const celdaTotal = fila.insertCell();
             const celdaTotalPagado = fila.insertCell();
             const celdaSaldoActual = fila.insertCell();
 
             celdaNombre.textContent = tarjeta.nombre;
-            celdaTotal.textContent = `$${tarjeta.saldoInicial.toFixed(2)}`; // Usamos saldoInicial
+            celdaTotal.textContent = `$${tarjeta.saldoInicial.toFixed(2)}`;
             celdaTotalPagado.textContent = `$${totalPagado.toFixed(2)}`;
             celdaSaldoActual.textContent = `$${saldoActual.toFixed(2)}`;
 
             resumenData.push({
                 Nombre: tarjeta.nombre,
-                'Total': tarjeta.saldoInicial, // Usamos Saldo Inicial
+                'Total': tarjeta.saldoInicial,
                 'Total Pagado': totalPagado,
                 'Saldo Actual': saldoActual
             });
