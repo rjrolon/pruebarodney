@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const formNuevaTarjeta = document.getElementById('form-nueva-tarjeta');
-    const tablaTarjetasBody = document.getElementById('tabla-tarjetas').querySelector('tbody');
+    const tablaTarjetas = document.getElementById('tabla-tarjetas'); // Referencia a la tabla completa
+    const tablaTarjetasBody = tablaTarjetas.querySelector('tbody');
     const formNuevoPago = document.getElementById('form-nuevo-pago');
     const selectTarjetaPago = document.getElementById('tarjeta-pago');
     const fechaPagoInput = document.getElementById('fecha-pago');
@@ -29,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'precargada-18', nombre: '330VISA VISA Santa Fe', saldoInicial: 0, fechaVencimiento: '', pagos: [] },
         { id: 'precargada-19', nombre: '415AMEX Amex Reba', saldoInicial: 0, fechaVencimiento: '', pagos: [] }
     ];
-    let tarjetas = cargarTarjetas(tarjetasPrecargadas); // Pasamos las tarjetas precargadas a la función
+    let tarjetas = cargarTarjetas(tarjetasPrecargadas);
     actualizarTablaTarjetas();
     actualizarOpcionesTarjetaPago();
     actualizarTablaPagos();
@@ -40,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const anio = hoy.getFullYear();
     const mes = String(hoy.getMonth() + 1).padStart(2, '0');
     const dia = String(hoy.getDate()).padStart(2, '0');
-    fechaPagoInput.value = `${anio}-${mes}-${dia}`;
+    fechaPagoInput.value = `<span class="math-inline">\{anio\}\-</span>{mes}-${dia}`;
 
     formNuevaTarjeta.addEventListener('submit', function(event) {
         event.preventDefault();
@@ -56,11 +57,71 @@ document.addEventListener('DOMContentLoaded', () => {
         exportarResumenCSV();
     });
 
+    tablaTarjetasBody.addEventListener('click', function(event) {
+        const target = event.target;
+        if (target.tagName === 'TD' && (target.cellIndex === 1 || target.cellIndex === 2)) { // Celda de Saldo Inicial (índice 1) o Fecha de Vencimiento (índice 2)
+            const fila = target.parentNode;
+            const tarjetaId = fila.dataset.tarjetaId;
+            const tarjeta = tarjetas.find(t => t.id === tarjetaId);
+
+            if (tarjeta) {
+                const columnaIndex = target.cellIndex;
+                const valorActual = target.textContent.startsWith('$') ? target.textContent.substring(1) : target.textContent; // Remover el '$' si existe
+                const tipo = columnaIndex === 1 ? 'number' : 'date';
+
+                // Crear input
+                const input = document.createElement('input');
+                input.type = tipo;
+                input.value = valorActual === '-' ? '' : valorActual;
+                input.classList.add('form-control', 'form-control-sm');
+
+                // Crear botones
+                const botonGuardar = document.createElement('button');
+                botonGuardar.textContent = 'Guardar';
+                botonGuardar.classList.add('btn', 'btn-sm', 'btn-success', 'ms-1');
+                const botonCancelar = document.createElement('button');
+                botonCancelar.textContent = 'Cancelar';
+                botonCancelar.classList.add('btn', 'btn-sm', 'btn-secondary', 'ms-1');
+
+                // Reemplazar la celda con el input y los botones
+                target.innerHTML = '';
+                target.appendChild(input);
+                target.appendChild(botonGuardar);
+                target.appendChild(botonCancelar);
+
+                input.focus();
+
+                // Eventos de los botones
+                botonGuardar.addEventListener('click', function() {
+                    const nuevoValor = input.value.trim();
+                    if (columnaIndex === 1) {
+                        tarjeta.saldoInicial = isNaN(parseFloat(nuevoValor)) ? tarjeta.saldoInicial : parseFloat(nuevoValor);
+                    } else {
+                        tarjeta.fechaVencimiento = nuevoValor;
+                    }
+                    guardarTarjetas();
+                    actualizarTablaTarjetas();
+                    actualizarResumenMensual();
+                });
+
+                botonCancelar.addEventListener('click', function() {
+                    actualizarTablaTarjetas(); // Re-renderiza la tabla para deshacer la edición
+                });
+
+                // Permitir guardar con Enter en el input (opcional)
+                input.addEventListener('keypress', function(event) {
+                    if (event.key === 'Enter') {
+                        botonGuardar.click();
+                    }
+                });
+            }
+        }
+    });
+
     function cargarTarjetas(precargadas) {
         const tarjetasGuardadas = localStorage.getItem('tarjetas');
         if (tarjetasGuardadas) {
             const tarjetasLocalStorage = JSON.parse(tarjetasGuardadas);
-            // Filtramos las precargadas para evitar duplicados por nombre con las locales
             const tarjetasUnicasPrecargadas = precargadas.filter(precargada =>
                 !tarjetasLocalStorage.some(local => local.nombre === precargada.nombre)
             );
@@ -103,6 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tablaTarjetasBody.innerHTML = '';
         tarjetas.forEach(tarjeta => {
             const fila = tablaTarjetasBody.insertRow();
+            fila.dataset.tarjetaId = tarjeta.id; // Guardar el ID de la tarjeta en la fila
             const celdaNombre = fila.insertCell();
             const celdaSaldoInicial = fila.insertCell();
             const celdaFechaVencimiento = fila.insertCell();
@@ -263,22 +325,3 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = window.resumenDataParaExportar;
         const csvRows = [];
         const headers = Object.keys(data[0]).join(',');
-        csvRows.push(headers);
-
-        data.forEach(row => {
-            const values = Object.values(row).map(value => `"${value}"`).join(',');
-            csvRows.push(values);
-        });
-
-        const csvString = csvRows.join('\n');
-        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'resumen_financiero.csv';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
-});
